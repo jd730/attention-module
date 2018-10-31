@@ -102,7 +102,7 @@ class ResNet(nn.Module):
         super(ResNet, self).__init__()
         self.network_type = network_type
         # different model config between ImageNet and CIFAR 
-        if network_type == "ImageNet":
+        if network_type == "ImageNet" or network_type == "PascalVoc":
             self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
             self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
             self.avgpool = nn.AvgPool2d(7)
@@ -124,7 +124,7 @@ class ResNet(nn.Module):
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2, att_type=att_type)
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2, att_type=att_type)
 
-        self.fc = nn.Linear(512 * block.expansion, num_classes)
+        self.fc = nn.Linear(512 * block.expansion, num_classes) # not pretrained
 
         init.kaiming_normal(self.fc.weight)
         for key in self.state_dict():
