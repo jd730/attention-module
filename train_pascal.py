@@ -264,7 +264,6 @@ def train(train_loader, model, criterion, optimizer, epoch, saved_value):
                    abs_data_time, abs_losses, abs_all_accs))
             
             logger.log((cls_accs/(cnt)))
-            print(cls_cnt)
             
             logger.record_tabular('loss',loss.item())
             logger.record_tabular('loss_accum', abs_losses)
@@ -386,7 +385,7 @@ def pascal_accuracy(output, target, cls_cnt) :
     cls_acc[cls_acc != cls_acc] = 0 # NaN to 0
 
     cls_cnt += target.sum(dim=0)
-    cls_acc = cls_acc / target.sum(dim=0)
+    cls_acc = cls_acc.sum(dim=0)/ target.sum(dim=0)
     cls_acc[cls_acc != cls_acc] = 0 
     return all_acc.mean(dim=0), cls_acc, cls_cnt
 
