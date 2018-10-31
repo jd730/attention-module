@@ -7,7 +7,7 @@ import numpy as np
 import os
 import os.path
 import sys
-
+import pdb
 
 def has_file_allowed_extension(filename, extensions):
     """Checks if a file is an allowed extension.
@@ -78,9 +78,11 @@ class DatasetFolder(data.Dataset):
         self.root = root
         self.loader = loader
         self.extensions = extensions
-
-        self.samples = samples
-        self.targets = [s[1] for s in samples]
+        self.samples = []
+        for i in range(len(samples[0])):
+            self.samples.append((samples[0][i], samples[1][i]))
+#        self.samples = [(s[0], s[1]) for s in samples]
+        self.targets = samples[1]#[s[1] for s in samples]
 
         self.transform = transform
         self.target_transform = target_transform
@@ -97,7 +99,7 @@ class DatasetFolder(data.Dataset):
             li = f.readlines()
             for l in li :
                 name = l.replace('\n','')
-                images.append(os.path.join(dataset_list, name + '.jpg'))
+                images.append(os.path.join(dir, name + '.jpg'))
                 cls.append(self.get_cls(anno_path, name))
         return (images, cls)
 
@@ -159,14 +161,15 @@ class DatasetFolder(data.Dataset):
         Returns:
             tuple: (sample, target) where target is class_index of the target class.
         """
-        pdb.set_trace()
-        path, target = self.samples[index]
+        #path, target = self.samples
+        path = self.samples[index][0]
+        target = self.samples[index][1]
         sample = self.loader(path)
         if self.transform is not None:
             sample = self.transform(sample)
         if self.target_transform is not None:
             target = self.target_transform(target)
-
+        
         return sample, target
 
     def __len__(self):
@@ -190,6 +193,7 @@ def pil_loader(path):
     # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
     with open(path, 'rb') as f:
         img = Image.open(f)
+        img = img.resize((224,224))
         return img.convert('RGB')
 
 

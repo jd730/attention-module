@@ -5,6 +5,7 @@ import math
 from torch.nn import init
 from .cbam import *
 from .bam import *
+import pdb
 
 def conv3x3(in_planes, out_planes, stride=1):
     "3x3 convolution with padding"
@@ -183,6 +184,7 @@ class ResNet(nn.Module):
             x = F.avg_pool2d(x, 4)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
+        x = torch.sigmoid(x)
         return x
 
 def ResidualNet(network_type, depth, num_classes, att_type):
